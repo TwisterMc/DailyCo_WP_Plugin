@@ -1,0 +1,29 @@
+.dailycoForm .df_row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	max-width: 100%;
+	margin-bottom: 10px;
+}
+
+.dailycoForm .df_column {
+	display: flex;
+	flex-direction: column;
+	flex-basis: 25%;
+}
+
+.dailycoForm .df_double-column {
+	display: flex;
+	flex-direction: column;
+	flex: 75%;
+}
+
+.dailyco_admin {
+	height: 30px;
+	overflow: hidden;
+	margin-top: 100px;
+}
+
+.dailyco_admin:hover {
+	height: auto;
+}
