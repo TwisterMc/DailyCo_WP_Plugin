@@ -19,7 +19,7 @@
 function daily_co_scripts() {
 	$localize = array(
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
-		'apikey'  => get_option( 'dailyco_api_key' ),
+		'apikey'  => dailyco_crypt( get_option( 'dailyco_api_key' ), 'd' ),
 	);
 
 	wp_enqueue_style( 'styles-daily-co', plugins_url( 'assets/style.css', __FILE__ ) );
@@ -182,31 +182,47 @@ function dailyco_register_options_page() {
 }
 add_action( 'admin_menu', 'dailyco_register_options_page' );
 
-function dailyco_options_page()
-{
+
+// hook into the update function to encode our api key
+function dailyco_update_api_field( $new_value, $old_value ) {
+
+	// check if encoded first.
+	if ( dailyco_crypt( $old_value, 'd' ) === $new_value ) {
+		// already encoded
+		return $old_value;
+	} else {
+		$new_value = dailyco_crypt( $new_value, 'e' );
+		return $new_value;
+	}
+}
+
+function dailyco_init() {
+	add_filter( 'pre_update_option_dailyco_api_key', 'dailyco_update_api_field', 10, 2 );
+}
+
+add_action( 'init', 'dailyco_init' );
+
+
+// create the options page
+function dailyco_options_page() {
 ?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'DailyCo Options', 'daily_co' ); ?></h1>
 		<form method="post" action="options.php">
 			<?php
 			settings_fields( 'dailyco_options_group' );
-			$api_key      = get_option( 'dailyco_api_key' );
+			$api_key   = get_option( 'dailyco_api_key' );
+			$api_d_key = dailyco_crypt( $api_key, 'd' );
+
 			$heading_text = get_option( 'dailyco_heading_text' );
 			$button_text  = get_option( 'dailyco_button_text' );
 			$sub_text     = get_option( 'dailyco_sub_text' );
-
-			$message = dailyco_crypt($api_key, 'd');
-			if ( is_array( $message ) || is_object( $message ) ) {
-				error_log( print_r( $message, true ) );
-			} else {
-				error_log( $message );
-			}
 			?>
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row"><label for="dailyco_api_key"><?php esc_html_e( 'Daily.co API Key', 'daily_co' ); ?></label></th>
 					<td>
-						<input type="text" class="regular-text" id="dailyco_api_key" name="dailyco_api_key" value="<?php echo ! empty( $api_key ) ? $api_key : ''; ?>" />
+						<input type="text" class="regular-text" id="dailyco_api_key" name="dailyco_api_key" value="<?php echo ! empty( $api_d_key ) ? $api_d_key : ''; ?>" />
 						<p class="description"><?php _e( 'This can be found on your <a href="https://dashboard.daily.co/" target="_blank">Daily.co dashboard</a> under the Developers tab.', 'daily_co' ); ?></p>
 					</td>
 				</tr>
@@ -234,7 +250,6 @@ function dailyco_options_page()
 
 /**
  * Encrypt and decrypt
- * TODO: // Integrate
  *
  * @author Nazmul Ahsan <n.mukto@gmail.com>
  * @link http://nazmulahsan.me/simple-two-way-function-encrypt-decrypt-string/
@@ -245,8 +260,9 @@ function dailyco_options_page()
 function dailyco_crypt( $string, $action = 'e' ) {
 
 	// you may change these values to your own
-	$secret_key = 'SCvThGINWy&C';
-	$secret_iv  = '9!^c7J6owOJ#';
+	// @todo Figure out secret keys that are actually secret.
+	$secret_key = 'my_simple_secret_key';
+	$secret_iv  = 'my_simple_secret_iv';
 
 	$output         = false;
 	$encrypt_method = 'AES-256-CBC';
