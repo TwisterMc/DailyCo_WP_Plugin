@@ -15,6 +15,7 @@
 /**
  * Activation hook to setup our secrets when the plugin is activated
  */
+// @todo: setup defaults for everything on load or someplace
 register_activation_hook( __FILE__, '_plugin_activation' );
 
 function _plugin_activation() {
@@ -112,8 +113,8 @@ add_action( 'wp_ajax_nopriv_dailyco_email', 'dailyco_email' );
 // TODO: Setup from and email details
 function dailyco_email() {
 	$to        = $_POST['email'];
-	$from      = 'no-reply@olaf.local';
-	$from_name = 'Me Myself';
+	$from      = get_from_email();
+	$from_name = get_option( 'dailyco_email_from' );
 	$subject   = 'Chat Session Request - ' . get_bloginfo( 'name' );
 	$body      = dailyco_email_message( $_POST['name'], $_POST['link'] );
 	$headers   = array( 'Content-Type: text/html; charset=UTF-8' );
@@ -123,14 +124,42 @@ function dailyco_email() {
 }
 
 /**
+ * Generate From Email Address
+ */
+function get_from_email() {
+	$from_email = 'no-reply@' . $_SERVER['SERVER_NAME'];
+	return $from_email;
+}
+
+/**
+ * Default Email Body
+ */
+function dailyco_email_message_default() {
+	$message  = 'Hello [to_name],';
+	$message .= "\n\n";
+	$message .= '[requester] would like to have a video conference with you.';
+	$message .= "\n\n";
+	$message .= 'Please click the following link to join.';
+	$message .= "\n\n";
+	$message .= '[video_link]';
+	$message .= "\n\n";
+	$message .= 'Thanks';
+	$message .= "\n\n";
+	$message .= 'This message was sent via [site_info].';
+
+	return $message;
+}
+
+/**
  * Setup the email body
  */
 function dailyco_email_message( $name, $link ) {
-	$message  = '<p>Hello ' . $name . ',</p>';
-	$message .= '<p>' . dailyco_get_current_user() . ' would like to have a video conference with you. Please click the following link to join.</p>';
-	$message .= '<p><a href="' . $link . '">' . $link . '</a></p>';
-	$message .= '<p>This message was sent via ' . get_bloginfo( 'name' ) . ' ' . get_bloginfo( 'url' ) . '</p>';
-
+	$message = wp_strip_all_tags( get_option( 'dailyco_email_template' ) );
+	$message = wpautop( $message );
+	$message = str_replace( '[to_name]', $name, $message );
+	$message = str_replace( '[requester]', dailyco_get_current_user(), $message );
+	$message = str_replace( '[video_link]', '<a href="' . $link . '">' . $link . '</a>', $message );
+	$message = str_replace( '[site_info]', get_bloginfo( 'name' ) . ' ' . get_bloginfo( 'url' ), $message );
 	return $message;
 }
 
@@ -190,6 +219,9 @@ function dailyco_register_settings() {
 	register_setting( 'dailyco_options_group', 'dailyco_sub_text', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_secret_key', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_secret_iv', 'dailyco_callback' );
+	register_setting( 'dailyco_options_group', 'dailyco_email_from', 'dailyco_callback' );
+	register_setting( 'dailyco_options_group', 'dailyco_email_template', 'dailyco_callback' );
+	register_setting( 'dailyco_options_group', 'dailyco_email_subject', 'dailyco_callback' );
 }
 add_action( 'admin_init', 'dailyco_register_settings' );
 
@@ -235,6 +267,10 @@ function dailyco_options_page() {
 
 			$secret_key = get_option( 'dailyco_secret_key' );
 			$secret_iv  = get_option( 'dailyco_secret_iv' );
+
+			$email_from     = get_option( 'dailyco_email_from' );
+			$email_subject  = get_option( 'dailyco_email_subject' );
+			$email_template = get_option( 'dailyco_email_template' );
 			?>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -263,7 +299,28 @@ function dailyco_options_page() {
 			<h2 class="title"><?php esc_html_e( 'Email Customization', 'daily_co' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
-					<td></td>
+					<th scope="row"><label for="dailyco_email_from"><?php esc_html_e( 'From Name', 'daily_co' ); ?></label></th>
+					<td><input type="text" class="regular-text" id="dailyco_email_from" name="dailyco_email_from" value="<?php echo ! empty( $email_from ) ? $email_from : 'WordPress Site'; ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="dailyco_email_from_email"><?php esc_html_e( 'From Email', 'daily_co' ); ?></label></th>
+					<td>
+						<input readonly type="text" class="regular-text" id="dailyco_email_from_email" name="dailyco_email_from_email" value="<?php echo get_from_email(); ?>" />
+						<p>Not editable.</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="dailyco_email_subject"><?php esc_html_e( 'Subject', 'daily_co' ); ?></label></th>
+					<td><input type="text" class="regular-text" id="dailyco_email_subject" name="dailyco_email_subject" value="<?php echo ! empty( $email_subject ) ? $email_subject : 'Video Meeting Request'; ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="dailyco_email_template"><?php esc_html_e( 'Email Template', 'daily_co' ); ?></label></th>
+					<td>
+						<textarea type="text" class="regular-text" id="dailyco_email_template" name="dailyco_email_template"><?php echo ! empty( $email_template ) ? $email_template : dailyco_email_message_default(); ?></textarea>
+						<p class="description">Use merge tags to personalize the email.</p>
+						<p class="description">Valid merge tags: [to_name], [requester], [video_link], [site_info]</p>
+						<p class="description">No HTML is allowed.</p>
+					</td>
 				</tr>
 			</table>
 			<h2 class="title"><?php esc_html_e( 'Secrets for Encryption', 'daily_co' ); ?></h2>
