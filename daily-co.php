@@ -246,7 +246,7 @@ function dailyco_options_page() {
 				</tr>
 			</table>
 			<table class="form-table" role="presentation">
-				<h2 class="title"><?php esc_html_e( 'Text Customization', 'daily_co' ); ?></h2>
+				<h2 class="title"><?php esc_html_e( 'Form Customization', 'daily_co' ); ?></h2>
 				<tr>
 					<th scope="row"><label for="dailyco_heading_text"><?php esc_html_e( 'Heading', 'daily_co' ); ?></label></th>
 					<td><input type="text" class="regular-text" id="dailyco_heading_text" name="dailyco_heading_text" value="<?php echo ! empty( $heading_text ) ? $heading_text : 'Who would you like to meet with?'; ?>" /></td>
@@ -259,6 +259,16 @@ function dailyco_options_page() {
 					<th scope="row"><label for="dailyco_sub_text"><?php esc_html_e( 'Sub Text', 'daily_co' ); ?></label></th>
 					<td><input type="text" class="regular-text" id="dailyco_sub_text" name="dailyco_sub_text" value="<?php echo ! empty( $sub_text ) ? $sub_text : 'All rooms expire within 24 hours.'; ?>" /></td>
 				</tr>
+			</table>
+			<h2 class="title"><?php esc_html_e( 'Email Customization', 'daily_co' ); ?></h2>
+			<table class="form-table" role="presentation">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+			<h2 class="title"><?php esc_html_e( 'Secrets for Encryption', 'daily_co' ); ?></h2>
+			<p class="description">These keys are used to encrypt the API key in the database. You are not able to change these, but you have the keys if you need them for any reason.</p>
+			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row"><label for="dailyco_secret_key"><?php esc_html_e( 'Secret Key', 'daily_co' ); ?></label></th>
 					<td><input type="text" readonly class="regular-text" id="dailyco_secret_key" name="dailyco_secret_key" value="<?php echo $secret_key; ?>" /></td>
