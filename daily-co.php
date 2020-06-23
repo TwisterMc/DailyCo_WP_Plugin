@@ -210,7 +210,6 @@ function wpdocs_register_widgets() {
  * Settings Page in WP Admin
  */
 function dailyco_register_settings() {
-	add_option( 'dailyco_option_name', 'This is my option value.' );
 	register_setting( 'dailyco_options_group', 'dailyco_api_key', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_heading_text', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_button_text', 'dailyco_callback' );
