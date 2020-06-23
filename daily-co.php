@@ -12,6 +12,20 @@
  * @package         Daily_Co
  */
 
+/**
+ * Activation hook to setup our secrets when the plugin is activated
+ */
+register_activation_hook( __FILE__, '_plugin_activation' );
+
+function _plugin_activation() {
+	if ( ! get_option( 'dailyco_secret_key' ) ) {
+		add_option( 'dailyco_secret_key', wp_generate_password( 8 ) );
+	}
+
+	if ( ! get_option( 'dailyco_secret_iv' ) ) {
+		add_option( 'dailyco_secret_iv', wp_generate_password( 8 ) );
+	}
+}
 
 /**
  * Enqueue scripts and styles
@@ -174,6 +188,8 @@ function dailyco_register_settings() {
 	register_setting( 'dailyco_options_group', 'dailyco_heading_text', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_button_text', 'dailyco_callback' );
 	register_setting( 'dailyco_options_group', 'dailyco_sub_text', 'dailyco_callback' );
+	register_setting( 'dailyco_options_group', 'dailyco_secret_key', 'dailyco_callback' );
+	register_setting( 'dailyco_options_group', 'dailyco_secret_iv', 'dailyco_callback' );
 }
 add_action( 'admin_init', 'dailyco_register_settings' );
 
@@ -181,7 +197,6 @@ function dailyco_register_options_page() {
 	add_options_page( 'DailyCo Settings', 'DailyCo', 'manage_options', 'dailyco', 'dailyco_options_page' );
 }
 add_action( 'admin_menu', 'dailyco_register_options_page' );
-
 
 // hook into the update function to encode our api key
 function dailyco_update_api_field( $new_value, $old_value ) {
@@ -217,6 +232,9 @@ function dailyco_options_page() {
 			$heading_text = get_option( 'dailyco_heading_text' );
 			$button_text  = get_option( 'dailyco_button_text' );
 			$sub_text     = get_option( 'dailyco_sub_text' );
+
+			$secret_key = get_option( 'dailyco_secret_key' );
+			$secret_iv  = get_option( 'dailyco_secret_iv' );
 			?>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -241,11 +259,19 @@ function dailyco_options_page() {
 					<th scope="row"><label for="dailyco_sub_text"><?php esc_html_e( 'Sub Text', 'daily_co' ); ?></label></th>
 					<td><input type="text" class="regular-text" id="dailyco_sub_text" name="dailyco_sub_text" value="<?php echo ! empty( $sub_text ) ? $sub_text : 'All rooms expire within 24 hours.'; ?>" /></td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="dailyco_secret_key"><?php esc_html_e( 'Secret Key', 'daily_co' ); ?></label></th>
+					<td><input type="text" readonly class="regular-text" id="dailyco_secret_key" name="dailyco_secret_key" value="<?php echo $secret_key; ?>" /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="dailyco_secret_iv"><?php esc_html_e( 'Secret IV', 'daily_co' ); ?></label></th>
+					<td><input type="text" readonly class="regular-text" id="dailyco_secret_iv" name="dailyco_secret_iv" value="<?php echo $secret_iv; ?>" /></td>
+				</tr>
 			</table>
 			<?php submit_button(); ?>
 		</form>
 	</div>
-<?php
+	<?php
 }
 
 /**
@@ -260,9 +286,8 @@ function dailyco_options_page() {
 function dailyco_crypt( $string, $action = 'e' ) {
 
 	// you may change these values to your own
-	// @todo Figure out secret keys that are actually secret.
-	$secret_key = 'my_simple_secret_key';
-	$secret_iv  = 'my_simple_secret_iv';
+	$secret_key = get_option( 'dailyco_secret_key' );
+	$secret_iv  = get_option( 'dailyco_secret_iv' );
 
 	$output         = false;
 	$encrypt_method = 'AES-256-CBC';
