@@ -37,7 +37,7 @@ function daily_co_scripts() {
 	);
 
 	wp_enqueue_style( 'styles-daily-co', plugins_url( 'assets/style.css', __FILE__ ) );
-	wp_enqueue_script( 'script-daily-co', plugins_url( 'assets/scripts.js', __FILE__ ), array(), '1.0.0', true );
+	wp_enqueue_script( 'script-daily-co', plugins_url( 'assets/scripts.js', __FILE__ ), array( 'jquery' ), '1.0.0', true );
 	wp_enqueue_script( 'script-daily-co-source', 'https://unpkg.com/@daily-co/daily-js', array(), '1.0.0', true );
 	wp_localize_script( 'script-daily-co', 'daily_co_script', $localize );
 }
@@ -134,7 +134,7 @@ function get_from_email() {
  * Default Email Body
  */
 function dailyco_email_message_default() {
-	$message  = 'Hello [to_name],';
+	$message  = 'Hello [invitee],';
 	$message .= "\n\n";
 	$message .= '[requester] would like to have a video conference with you.';
 	$message .= "\n\n";
@@ -155,7 +155,7 @@ function dailyco_email_message_default() {
 function dailyco_email_message( $name, $link ) {
 	$message = wp_strip_all_tags( get_option( 'dailyco_email_template', dailyco_email_message_default() ) );
 	$message = wpautop( $message );
-	$message = str_replace( '[to_name]', $name, $message );
+	$message = str_replace( '[invitee]', $name, $message );
 	$message = str_replace( '[requester]', dailyco_get_current_user(), $message );
 	$message = str_replace( '[video_link]', '<a href="' . $link . '">' . $link . '</a>', $message );
 	$message = str_replace( '[site_info]', get_bloginfo( 'name' ) . ' ' . get_bloginfo( 'url' ), $message );
@@ -315,9 +315,9 @@ function dailyco_options_page() {
 				<tr>
 					<th scope="row"><label for="dailyco_email_template"><?php esc_html_e( 'Email Template', 'daily_co' ); ?></label></th>
 					<td>
-						<textarea type="text" class="regular-text" id="dailyco_email_template" name="dailyco_email_template"><?php echo $email_template; ?></textarea>
+						<textarea type="text" class="regular-text" id="dailyco_email_template" name="dailyco_email_template" style="height: 300px;"><?php echo $email_template; ?></textarea>
 						<p class="description">Use merge tags to personalize the email.</p>
-						<p class="description">Valid merge tags: [to_name], [requester], [video_link], [site_info]</p>
+						<p class="description">Valid merge tags: [invitee], [requester], [video_link], [site_info]</p>
 						<p class="description">No HTML is allowed.</p>
 					</td>
 				</tr>
