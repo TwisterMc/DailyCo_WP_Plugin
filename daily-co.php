@@ -53,7 +53,10 @@ function daily_co_shortcode_func() {
 add_shortcode( 'dailyco', 'daily_co_shortcode_func' );
 
 function dailyco_render_markup() {
-	if ( ! is_admin() && is_user_logged_in() ) {
+	// @todo: Reorder checks.
+	if ( ! get_option( 'dailyco_api_key' ) ) {
+		$dailyco_content = '<div class="dailyco_notice">' . __( 'There doesn\'t appear to be an API key setup.', 'daily_co' );
+	} elseif ( ! is_admin() && is_user_logged_in() ) {
 		$dailyco_content  = '<div class="dailyco_wrapper">';
 		$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text', 'Who would you like to meet with?' ) . '</h3>';
 		$dailyco_content .= '<form id="dailycoForm" name="dailycoForm" class="dailycoForm">';
@@ -96,7 +99,8 @@ function dailyco_render_markup() {
 			$dailyco_content .= '</div>';
 		}
 	} else {
-		$dailyco_content = '<strong>' . esc_html__( 'The chat feature is not available unless logged in.', 'daily_co' ) . '</strong>';
+		$dailyco_content  = '<div class="dailyco_notice">' . __( 'The chat feature is not available unless ', 'daily_co' );
+		$dailyco_content .= '<a href="' . esc_url( wp_login_url() ) . '">logged in</a>.</div><div></div>';
 	}
 
 	return $dailyco_content;
