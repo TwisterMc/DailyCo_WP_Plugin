@@ -109,7 +109,6 @@ function dailyco_render_markup() {
 add_action( 'wp_ajax_dailyco_email', 'dailyco_email' );
 add_action( 'wp_ajax_nopriv_dailyco_email', 'dailyco_email' );
 
-// TODO: Setup from and email details
 function dailyco_email() {
 	$to        = $_POST['email'];
 	$from      = get_from_email();
