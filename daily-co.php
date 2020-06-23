@@ -15,7 +15,6 @@
 /**
  * Activation hook to setup our secrets when the plugin is activated
  */
-// @todo: setup defaults for everything on load or someplace
 register_activation_hook( __FILE__, '_plugin_activation' );
 
 function _plugin_activation() {
@@ -56,7 +55,7 @@ add_shortcode( 'dailyco', 'daily_co_shortcode_func' );
 function dailyco_render_markup() {
 	if ( ! is_admin() && is_user_logged_in() ) {
 		$dailyco_content  = '<div class="dailyco_wrapper">';
-		$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text' ) . '</h3>';
+		$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text', 'Who would you like to meet with?' ) . '</h3>';
 		$dailyco_content .= '<form id="dailycoForm" name="dailycoForm" class="dailycoForm">';
 		$dailyco_content .= '<div class="df_row">';
 		$dailyco_content .= '<div class="df_column">';
@@ -78,14 +77,14 @@ function dailyco_render_markup() {
 		$dailyco_content .= '<div class="df_column">';
 		$dailyco_content .= '</div>';
 		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<button type="submit" id="createRoom">' . get_option( 'dailyco_button_text' ) . '</button>';
+		$dailyco_content .= '<button type="submit" id="createRoom">' . get_option( 'dailyco_button_text', 'Who would you like to meet with?' ) . '</button>';
 		$dailyco_content .= '</div>';
 		$dailyco_content .= '</div>';
 		$dailyco_content .= '<div class="df_row">';
 		$dailyco_content .= '<div class="df_column">';
 		$dailyco_content .= '</div>';
 		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<div>' . get_option( 'dailyco_sub_text' ) . '</div>';
+		$dailyco_content .= '<div>' . get_option( 'dailyco_sub_text', 'All rooms expire within 24 hours.' ) . '</div>';
 		$dailyco_content .= '</div>';
 		$dailyco_content .= '</form>';
 		$dailyco_content .= '</div>';
@@ -114,8 +113,8 @@ add_action( 'wp_ajax_nopriv_dailyco_email', 'dailyco_email' );
 function dailyco_email() {
 	$to        = $_POST['email'];
 	$from      = get_from_email();
-	$from_name = get_option( 'dailyco_email_from' );
-	$subject   = 'Chat Session Request - ' . get_bloginfo( 'name' );
+	$from_name = get_option( 'dailyco_email_from', get_bloginfo( 'name' ) );
+	$subject   = get_option( 'dailyco_email_subject', 'Video Meeting Request' );
 	$body      = dailyco_email_message( $_POST['name'], $_POST['link'] );
 	$headers   = array( 'Content-Type: text/html; charset=UTF-8' );
 	$headers[] = 'From: ' . $from_name . ' <' . $from . '>';
@@ -154,7 +153,7 @@ function dailyco_email_message_default() {
  * Setup the email body
  */
 function dailyco_email_message( $name, $link ) {
-	$message = wp_strip_all_tags( get_option( 'dailyco_email_template' ) );
+	$message = wp_strip_all_tags( get_option( 'dailyco_email_template', dailyco_email_message_default() ) );
 	$message = wpautop( $message );
 	$message = str_replace( '[to_name]', $name, $message );
 	$message = str_replace( '[requester]', dailyco_get_current_user(), $message );
@@ -261,16 +260,16 @@ function dailyco_options_page() {
 			$api_key   = get_option( 'dailyco_api_key' );
 			$api_d_key = dailyco_crypt( $api_key, 'd' );
 
-			$heading_text = get_option( 'dailyco_heading_text' );
-			$button_text  = get_option( 'dailyco_button_text' );
-			$sub_text     = get_option( 'dailyco_sub_text' );
+			$heading_text = get_option( 'dailyco_heading_text', 'Who would you like to meet with?' );
+			$button_text  = get_option( 'dailyco_button_text', 'Invite & Join Meeting' );
+			$sub_text     = get_option( 'dailyco_sub_text', 'All rooms expire within 24 hours.' );
 
 			$secret_key = get_option( 'dailyco_secret_key' );
 			$secret_iv  = get_option( 'dailyco_secret_iv' );
 
-			$email_from     = get_option( 'dailyco_email_from' );
-			$email_subject  = get_option( 'dailyco_email_subject' );
-			$email_template = get_option( 'dailyco_email_template' );
+			$email_from     = get_option( 'dailyco_email_from', get_bloginfo( 'name' ) );
+			$email_subject  = get_option( 'dailyco_email_subject', 'Video Meeting Request' );
+			$email_template = get_option( 'dailyco_email_template', dailyco_email_message_default() );
 			?>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -285,22 +284,22 @@ function dailyco_options_page() {
 				<h2 class="title"><?php esc_html_e( 'Form Customization', 'daily_co' ); ?></h2>
 				<tr>
 					<th scope="row"><label for="dailyco_heading_text"><?php esc_html_e( 'Heading', 'daily_co' ); ?></label></th>
-					<td><input type="text" class="regular-text" id="dailyco_heading_text" name="dailyco_heading_text" value="<?php echo ! empty( $heading_text ) ? $heading_text : 'Who would you like to meet with?'; ?>" /></td>
+					<td><input type="text" class="regular-text" id="dailyco_heading_text" name="dailyco_heading_text" value="<?php echo $heading_text; ?>" /></td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="dailyco_button_text"><?php esc_html_e( 'Button Text', 'daily_co' ); ?></label></th>
-					<td><input type="text" class="regular-text" id="dailyco_button_text" name="dailyco_button_text" value="<?php echo ! empty( $button_text ) ? $button_text : 'Invite & Join Meeting'; ?>" /></td>
+					<td><input type="text" class="regular-text" id="dailyco_button_text" name="dailyco_button_text" value="<?php echo $button_text; ?>" /></td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="dailyco_sub_text"><?php esc_html_e( 'Sub Text', 'daily_co' ); ?></label></th>
-					<td><input type="text" class="regular-text" id="dailyco_sub_text" name="dailyco_sub_text" value="<?php echo ! empty( $sub_text ) ? $sub_text : 'All rooms expire within 24 hours.'; ?>" /></td>
+					<td><input type="text" class="regular-text" id="dailyco_sub_text" name="dailyco_sub_text" value="<?php echo $sub_text; ?>" /></td>
 				</tr>
 			</table>
 			<h2 class="title"><?php esc_html_e( 'Email Customization', 'daily_co' ); ?></h2>
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row"><label for="dailyco_email_from"><?php esc_html_e( 'From Name', 'daily_co' ); ?></label></th>
-					<td><input type="text" class="regular-text" id="dailyco_email_from" name="dailyco_email_from" value="<?php echo ! empty( $email_from ) ? $email_from : 'WordPress Site'; ?>" /></td>
+					<td><input type="text" class="regular-text" id="dailyco_email_from" name="dailyco_email_from" value="<?php echo $email_from; ?>" /></td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="dailyco_email_from_email"><?php esc_html_e( 'From Email', 'daily_co' ); ?></label></th>
@@ -311,12 +310,12 @@ function dailyco_options_page() {
 				</tr>
 				<tr>
 					<th scope="row"><label for="dailyco_email_subject"><?php esc_html_e( 'Subject', 'daily_co' ); ?></label></th>
-					<td><input type="text" class="regular-text" id="dailyco_email_subject" name="dailyco_email_subject" value="<?php echo ! empty( $email_subject ) ? $email_subject : 'Video Meeting Request'; ?>" /></td>
+					<td><input type="text" class="regular-text" id="dailyco_email_subject" name="dailyco_email_subject" value="<?php echo $email_subject; ?>" /></td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="dailyco_email_template"><?php esc_html_e( 'Email Template', 'daily_co' ); ?></label></th>
 					<td>
-						<textarea type="text" class="regular-text" id="dailyco_email_template" name="dailyco_email_template"><?php echo ! empty( $email_template ) ? $email_template : dailyco_email_message_default(); ?></textarea>
+						<textarea type="text" class="regular-text" id="dailyco_email_template" name="dailyco_email_template"><?php echo $email_template; ?></textarea>
 						<p class="description">Use merge tags to personalize the email.</p>
 						<p class="description">Valid merge tags: [to_name], [requester], [video_link], [site_info]</p>
 						<p class="description">No HTML is allowed.</p>
