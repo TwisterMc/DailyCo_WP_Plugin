@@ -28,6 +28,29 @@ function _plugin_activation() {
 }
 
 /**
+ * Add Settings Link to Plugins Page
+ */
+add_filter( 'plugin_action_links_daily-co/daily-co.php', 'dc_settings_link' );
+function dc_settings_link( $links ) {
+	// Build and escape the URL.
+	$url = esc_url(
+		add_query_arg(
+			'page',
+			'dailyco',
+			get_admin_url() . 'admin.php'
+		)
+	);
+	// Create the link.
+	$settings_link = "<a href='$url'>" . __( 'Settings', 'daily_co' ) . '</a>';
+	// Adds the link to the end of the array.
+	array_push(
+		$links,
+		$settings_link
+	);
+	return $links;
+}
+
+/**
  * Enqueue scripts and styles
  */
 function daily_co_scripts() {
