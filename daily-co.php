@@ -52,6 +52,7 @@ function daily_co_shortcode_func() {
 
 add_shortcode( 'dailyco', 'daily_co_shortcode_func' );
 
+// @todo: Re-work this so it's not all in PHP.
 function dailyco_render_markup() {
 	if ( ! is_admin() && is_user_logged_in() ) {
 		if ( ! get_option( 'dailyco_api_key' ) ) {
