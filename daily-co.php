@@ -53,53 +53,54 @@ function daily_co_shortcode_func() {
 add_shortcode( 'dailyco', 'daily_co_shortcode_func' );
 
 function dailyco_render_markup() {
-	// @todo: Reorder checks.
-	if ( ! get_option( 'dailyco_api_key' ) ) {
-		$dailyco_content = '<div class="dailyco_notice">' . __( 'There doesn\'t appear to be an API key setup.', 'daily_co' );
-	} elseif ( ! is_admin() && is_user_logged_in() ) {
-		$dailyco_content  = '<div class="dailyco_wrapper">';
-		$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text', 'Who would you like to meet with?' ) . '</h3>';
-		$dailyco_content .= '<form id="dailycoForm" name="dailycoForm" class="dailycoForm">';
-		$dailyco_content .= '<div class="df_row">';
-		$dailyco_content .= '<div class="df_column">';
-		$dailyco_content .= '<label for="name">' . esc_html__( 'Name', 'daily_co' ) . '</label>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<input type="text" name="name" required="required" />';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_row">';
-		$dailyco_content .= '<div class="df_column">';
-		$dailyco_content .= '<label for="email">' . esc_html__( 'Email', 'daily_co' ) . '</label>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<input type="email" name="email" required="required" />';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_row">';
-		$dailyco_content .= '<div class="df_column">';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<button type="submit" id="createRoom">' . get_option( 'dailyco_button_text', 'Who would you like to meet with?' ) . '</button>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_row">';
-		$dailyco_content .= '<div class="df_column">';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '<div class="df_double-column">';
-		$dailyco_content .= '<div>' . get_option( 'dailyco_sub_text', 'All rooms expire within 24 hours.' ) . '</div>';
-		$dailyco_content .= '</div>';
-		$dailyco_content .= '</form>';
-		$dailyco_content .= '</div>';
-
-		if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
-			$dailyco_content .= '<div class="dailyco_admin">';
-			$dailyco_content .= '<h4>Debug / Admin Only Section &#x27A1; Rooms:</h4>';
-			$dailyco_content .= '<div id="rooms" class="rooms"></div>';
+	if ( ! is_admin() && is_user_logged_in() ) {
+		if ( ! get_option( 'dailyco_api_key' ) ) {
+			$dailyco_content = '<div class="dailyco_notice">' . __( 'There doesn\'t appear to be an API key in the settings.', 'daily_co' );
+		} else {
+			$dailyco_content  = '<div class="dailyco_wrapper">';
+			$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text', 'Who would you like to meet with?' ) . '</h3>';
+			$dailyco_content .= '<form id="dailycoForm" name="dailycoForm" class="dailycoForm">';
+			$dailyco_content .= '<div class="df_row">';
+			$dailyco_content .= '<div class="df_column">';
+			$dailyco_content .= '<label for="name">' . esc_html__( 'Name', 'daily_co' ) . '</label>';
 			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_double-column">';
+			$dailyco_content .= '<input type="text" name="name" required="required" />';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_row">';
+			$dailyco_content .= '<div class="df_column">';
+			$dailyco_content .= '<label for="email">' . esc_html__( 'Email', 'daily_co' ) . '</label>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_double-column">';
+			$dailyco_content .= '<input type="email" name="email" required="required" />';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_row">';
+			$dailyco_content .= '<div class="df_column">';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_double-column">';
+			$dailyco_content .= '<button type="submit" id="createRoom">' . get_option( 'dailyco_button_text', 'Who would you like to meet with?' ) . '</button>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_row">';
+			$dailyco_content .= '<div class="df_column">';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '<div class="df_double-column">';
+			$dailyco_content .= '<div>' . get_option( 'dailyco_sub_text', 'All rooms expire within 24 hours.' ) . '</div>';
+			$dailyco_content .= '</div>';
+			$dailyco_content .= '</form>';
+			$dailyco_content .= '</div>';
+
+			if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
+				$dailyco_content .= '<div class="dailyco_admin">';
+				$dailyco_content .= '<h4>Debug / Admin Only Section &#x27A1; Rooms:</h4>';
+				$dailyco_content .= '<div id="rooms" class="rooms"></div>';
+				$dailyco_content .= '</div>';
+			}
 		}
 	} else {
-		$dailyco_content  = '<div class="dailyco_notice">' . __( 'The chat feature is not available unless ', 'daily_co' );
+		$dailyco_content  = '<div class="dailyco_notice">' . __( 'The video chat feature is not available unless ', 'daily_co' );
 		$dailyco_content .= '<a href="' . esc_url( wp_login_url() ) . '">logged in</a>.</div><div></div>';
 	}
 
