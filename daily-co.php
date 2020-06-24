@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:     Daily Co
- * Plugin URI:      PLUGIN SITE HERE
+ * Plugin URI:      https://github.com/TwisterMc/DailyCo_WP_Plugin/tree/develop
  * Description:     Integrate Daily.co meetings into a website. Created for a specific use case.
  * Author:          Thomas McMahon
  * Author URI:      https://www.twistermc.com/
