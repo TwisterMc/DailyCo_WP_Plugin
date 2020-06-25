@@ -51,12 +51,31 @@ function dc_settings_link( $links ) {
 }
 
 /**
+ * Enabled debug for administrators if debug is turned on in wp-config.php
+ * todo: check if roles is an array and possibly super admin
+ */
+function debug_status() {
+	$current_user      = wp_get_current_user();
+	$current_user_role = $current_user->roles;
+	$current_user_role = $current_user_role[0];
+
+	if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
+		if ( 'administrator' === $current_user_role ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Enqueue scripts and styles
  */
 function daily_co_scripts() {
 	$localize = array(
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'apikey'  => dailyco_crypt( get_option( 'dailyco_api_key' ), 'd' ),
+		'debug'   => debug_status(),
 	);
 
 	wp_enqueue_style( 'styles-daily-co', plugins_url( 'assets/style.css', __FILE__ ) );
@@ -116,7 +135,7 @@ function dailyco_render_markup() {
 			$dailyco_content .= '</form>';
 			$dailyco_content .= '</div>';
 
-			if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
+			if ( debug_status() ) {
 				$dailyco_content .= '<div class="dailyco_admin">';
 				$dailyco_content .= '<h4>Debug / Admin Only Section &#x27A1; Rooms:</h4>';
 				$dailyco_content .= '<div id="rooms" class="rooms"></div>';

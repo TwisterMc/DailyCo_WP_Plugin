@@ -24,80 +24,19 @@ function createRoom(callback) {
 	let expDateUnix = Date.parse(expDate)/1000;
 
 	const data = "{\"properties\":{\"exp\":" + expDateUnix + ",\"autojoin\":true},\"privacy\":\"public\"}";
-	console.log(data);
 
 	const xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("readystatechange", function () {
 		if (this.readyState === this.DONE) {
-			console.log(this.responseText);
 
 			const response = JSON.parse(this.responseText);
 			callback(response.url);
-			//document.getElementById('newRoom').innerHTML = 'Your room has been created: <a href=' + response.url + '>' + response.name + '</a>' + '<button class="join" onclick="joinRoom(`' + response.url + '`)">Join Room</button></li>';
-			//getRooms('new');
 		}
 	});
 
 	xhr.open("POST", "https://api.daily.co/v1/rooms");
 	xhr.setRequestHeader("content-type", "application/json");
-	xhr.setRequestHeader("authorization", connectionToken);
-
-	xhr.send(data);
-}
-
-// List the rooms on the homepage TODO:// Remove
-function getRooms(roomStatus) {
-
-	// check to ensure the #rooms DIV is on the page
-	const roomDiv = document.getElementById("rooms");
-
-	if ( roomDiv ) {
-		const data = null;
-		const xhr  = new XMLHttpRequest();
-
-		xhr.addEventListener("readystatechange", function () {
-			if (this.readyState === this.DONE) {
-				//console.log(this.responseText);
-
-				let ourRooms = '';
-				let roomsJSON = JSON.parse(this.responseText);
-				for (let i = 0; i < roomsJSON.data.length; i++) {
-					let response = roomsJSON.data[i];
-					ourRooms = ourRooms + '<li><a href=' + response.url + '>' + response.name + '</a> ' + response.privacy + '<button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Room</button>' + '<button class="join" onclick="joinRoom(`' + response.url + '`)">Join Room</button></li>';
-				}
-
-				roomDiv.innerHTML = '<ul>' + ourRooms + '</ul>';
-
-				if (roomStatus === 'new') {
-					let text = document.getElementById('rooms');
-				}
-			}
-
-		});
-
-		xhr.open("GET", "https://api.daily.co/v1/rooms");
-		xhr.setRequestHeader("authorization", connectionToken);
-
-		xhr.send(data);
-	}
-}
-
-// Delete Rooms TODO:// Remove
-function deleteRoom(roomName) {
-	const data = null;
-
-	const xhr = new XMLHttpRequest();
-
-	xhr.addEventListener("readystatechange", function () {
-		if (this.readyState === this.DONE) {
-			//console.log(this.responseText);
-			getRooms('deleted');
-		}
-	});
-
-	let roomToDelete = "https://api.daily.co/v1/rooms/" + roomName;
-	xhr.open("DELETE", roomToDelete);
 	xhr.setRequestHeader("authorization", connectionToken);
 
 	xhr.send(data);
@@ -154,5 +93,78 @@ if ( submitButton ) {
 	submitButton.addEventListener("click", validateDailyCoForm, false);
 }
 
-// List the rooms on the homepage TODO:// Remove
-getRooms();
+/* ---------------------------------------------------------------------
+ Debugging Functions
+ Author: Thomas McMahon
+
+ These functions are mainly used for debugging purposes.
+ ------------------------------------------------------------------------ */
+
+// List the rooms on the homepage
+if ( daily_co_script.debug ) {
+	getRooms();
+}
+
+// List all rooms
+function getRooms(roomStatus) {
+	console.log('room debugging');
+
+	// check to ensure the #rooms DIV is on the page
+	const roomDiv = document.getElementById("rooms");
+
+	if ( roomDiv ) {
+		const data = null;
+		const xhr  = new XMLHttpRequest();
+
+		xhr.addEventListener("readystatechange", function () {
+			if (this.readyState === this.DONE) {
+
+				let ourRooms = '';
+				let roomsJSON = JSON.parse(this.responseText);
+				for (let i = 0; i < roomsJSON.data.length; i++) {
+					let response = roomsJSON.data[i];
+					ourRooms = ourRooms + '<li><a href=' + response.url + '>' + response.name + '</a> <button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Room</button> <button class="join" onclick="joinRoom(`' + response.url + '`)">Join Room</button> EXP Date: ' + convert_date(response.config.exp) + '</li>';
+				}
+
+				roomDiv.innerHTML = '<ul>' + ourRooms + '</ul>';
+
+				if (roomStatus === 'new') {
+					let text = document.getElementById('rooms');
+				}
+			}
+
+		});
+
+		xhr.open("GET", "https://api.daily.co/v1/rooms");
+		xhr.setRequestHeader("authorization", connectionToken);
+
+		xhr.send(data);
+	}
+}
+
+// Convert date from unix to readable
+function convert_date(unixdate) {
+	let unix_timestamp = unixdate
+	let date = new Date(unix_timestamp * 1000);
+	return date;
+
+}
+
+// Delete Rooms
+function deleteRoom(roomName) {
+	const data = null;
+
+	const xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("readystatechange", function () {
+		if (this.readyState === this.DONE) {
+			getRooms('deleted');
+		}
+	});
+
+	let roomToDelete = "https://api.daily.co/v1/rooms/" + roomName;
+	xhr.open("DELETE", roomToDelete);
+	xhr.setRequestHeader("authorization", connectionToken);
+
+	xhr.send(data);
+}
