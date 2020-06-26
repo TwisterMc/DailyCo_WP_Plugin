@@ -7,7 +7,6 @@ The DailyCo WordPress Plugin integrates Daily.co video chat into a WordPress sit
 ## Known Issues
 
 1. When leaving a meeting where the person that initiated the meeting can't interact with the site until they refresh the page.
-2. The rooms are not expiring within 24 hours.
 
 ## Requirements:
 
