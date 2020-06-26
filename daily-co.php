@@ -52,15 +52,14 @@ function dc_settings_link( $links ) {
 
 /**
  * Enabled debug for administrators if debug is turned on in wp-config.php
- * todo: check if roles is an array and possibly super admin
+ * Does not work for super-admins
  */
 function debug_status() {
 	$current_user      = wp_get_current_user();
 	$current_user_role = $current_user->roles;
-	$current_user_role = $current_user_role[0];
 
 	if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
-		if ( 'administrator' === $current_user_role ) {
+		if ( in_array( 'administrator', $current_user_role, true ) ) {
 			return true;
 		}
 	}
