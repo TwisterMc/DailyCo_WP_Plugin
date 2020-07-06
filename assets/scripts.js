@@ -120,7 +120,7 @@ function getRooms(roomStatus) {
 	// check to ensure the #rooms DIV is on the page
 	const roomDiv = document.getElementById("rooms");
 
-	if ( roomDiv ) {
+	if ( roomDiv && daily_co_script.apikey ) {
 		console.log('room debugging');
 
 		const data = null;

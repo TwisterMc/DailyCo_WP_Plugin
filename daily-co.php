@@ -315,9 +315,6 @@ function dailyco_options_page() {
 			$button_text  = get_option( 'dailyco_button_text', 'Invite & Join Meeting' );
 			$sub_text     = get_option( 'dailyco_sub_text', 'All rooms expire within 24 hours.' );
 
-			$secret_key = get_option( 'dailyco_secret_key' );
-			$secret_iv  = get_option( 'dailyco_secret_iv' );
-
 			$email_from     = get_option( 'dailyco_email_from', get_bloginfo( 'name' ) );
 			$email_subject  = get_option( 'dailyco_email_subject', 'Video Meeting Request' );
 			$email_template = get_option( 'dailyco_email_template', dailyco_email_message_default() );
@@ -375,18 +372,6 @@ function dailyco_options_page() {
 			</table>
 			<h2 class="title"><?php esc_html_e( 'Existing Rooms', 'daily_co' ); ?></h2>
 			<div id="rooms" class="rooms">No Rooms</div>
-			<h2 class="title"><?php esc_html_e( 'Secrets for Encryption', 'daily_co' ); ?></h2>
-			<p class="description">These keys are used to encrypt the API key in the database. You are not able to change these, but you have the keys if you need them for any reason.</p>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="dailyco_secret_key"><?php esc_html_e( 'Secret Key', 'daily_co' ); ?></label></th>
-					<td><input type="text" readonly class="regular-text" id="dailyco_secret_key" name="dailyco_secret_key" value="<?php echo $secret_key; ?>" /></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="dailyco_secret_iv"><?php esc_html_e( 'Secret IV', 'daily_co' ); ?></label></th>
-					<td><input type="text" readonly class="regular-text" id="dailyco_secret_iv" name="dailyco_secret_iv" value="<?php echo $secret_iv; ?>" /></td>
-				</tr>
-			</table>
 			<?php submit_button(); ?>
 		</form>
 	</div>
