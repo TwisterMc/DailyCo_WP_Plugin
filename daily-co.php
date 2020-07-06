@@ -51,30 +51,12 @@ function dc_settings_link( $links ) {
 }
 
 /**
- * Enabled debug for administrators if debug is turned on in wp-config.php
- * Does not work for super-admins
- */
-function debug_status() {
-	$current_user      = wp_get_current_user();
-	$current_user_role = $current_user->roles;
-
-	if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
-		if ( in_array( 'administrator', $current_user_role, true ) ) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/**
  * Enqueue scripts and styles
  */
 function daily_co_scripts() {
 	$localize = array(
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'apikey'  => dailyco_crypt( get_option( 'dailyco_api_key' ), 'd' ),
-		'debug'   => debug_status(),
 	);
 
 	wp_enqueue_style( 'styles-daily-co', plugins_url( 'assets/style.css', __FILE__ ) );
@@ -282,7 +264,6 @@ function pw_load_scripts( $hook ) {
 	$localize = array(
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'apikey'  => dailyco_crypt( get_option( 'dailyco_api_key' ), 'd' ),
-		'debug'   => debug_status(),
 	);
 
 	global $dailyco_settings_page;
