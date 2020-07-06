@@ -121,7 +121,6 @@ function getRooms(roomStatus) {
 	const roomDiv = document.getElementById("rooms");
 
 	if ( roomDiv && daily_co_script.apikey ) {
-		console.log('room debugging');
 
 		const data = null;
 		const xhr  = new XMLHttpRequest();
