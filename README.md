@@ -13,6 +13,18 @@ None at the moment.
 * WordPress 5.4 or later.
 	* Not tested on lower versions but may work.
 * Daily.Co Account
+* All users must be logged into WordPress.
+
+## Install
+
+1. Download the plugin from the [releases page](https://github.com/TwisterMc/DailyCo_WP_Plugin/releases).
+2. Unzip the file if your computer doesn't already do that for you.
+3. If the plugin folder isn't named `daily-co` rename the plugin folder to `daily-co`.
+4. Add it to your WordPress site.
+    * If needed, you can re-zip the `daily-co` folder and install it via the WordPress Admin plugin page.
+5. Activate the plugin.
+6. Add your Daily.co API key & customize the settings.
+7. Add either the `[dailyco]` short code or the Daily.co widget where you want the form.
 
 ## Customization:
 
