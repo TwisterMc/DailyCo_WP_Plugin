@@ -186,7 +186,6 @@ function deleteRoom(roomName) {
 	const data = null;
 
 	var confirmDelete = confirm("Are you sure you want to delete?");
-	console.log(confirmDelete);
 	if ( !confirmDelete ) {
 		return false;
 	}
