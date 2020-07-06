@@ -18,17 +18,6 @@
 	flex: 75%;
 }
 
-.dailyco_admin {
-	height: 30px;
-	overflow: hidden;
-	margin-top: 100px;
-	border-top: 1px solid #ccc;
-}
-
-.dailyco_admin:hover {
-	height: auto;
-}
-
 .dailyco_notice {
 	border-left: 3px solid #dc3232;
 	padding: 10px;

@@ -107,25 +107,22 @@ if ( submitButton ) {
 }
 
 /* ---------------------------------------------------------------------
- Debugging Functions
+ Admin Functions
  Author: Thomas McMahon
-
- These functions are mainly used for debugging purposes.
  ------------------------------------------------------------------------ */
 
-// List the rooms on the homepage
-if ( daily_co_script.debug ) {
-	getRooms();
-}
+// List the rooms in the admin
+getRooms();
 
 // List all rooms
 function getRooms(roomStatus) {
-	console.log('room debugging');
 
 	// check to ensure the #rooms DIV is on the page
 	const roomDiv = document.getElementById("rooms");
 
 	if ( roomDiv ) {
+		console.log('room debugging');
+
 		const data = null;
 		const xhr  = new XMLHttpRequest();
 
@@ -136,7 +133,7 @@ function getRooms(roomStatus) {
 				let roomsJSON = JSON.parse(this.responseText);
 				for (let i = 0; i < roomsJSON.data.length; i++) {
 					let response = roomsJSON.data[i];
-					ourRooms = ourRooms + '<li><a href=' + response.url + '>' + response.name + '</a> <button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Room</button> <button class="join" onclick="joinRoom(`' + response.url + '`)">Join Room</button> EXP Date: ' + convert_date(response.config.exp) + '</li>';
+					ourRooms = ourRooms + '<li><a href=' + response.url + '>' + response.name + '</a> <button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Room</button> EXP Date: ' + convert_date(response.config.exp) + '</li>';
 				}
 
 				roomDiv.innerHTML = '<ul>' + ourRooms + '</ul>';

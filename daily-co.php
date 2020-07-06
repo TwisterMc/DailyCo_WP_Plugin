@@ -142,13 +142,6 @@ function dailyco_render_markup() {
 			$dailyco_content .= '</div>';
 			$dailyco_content .= '</form>';
 			$dailyco_content .= '</div>';
-
-			if ( debug_status() ) {
-				$dailyco_content .= '<div class="dailyco_admin">';
-				$dailyco_content .= '<h4>Debug / Admin Only Section &#x27A1; Rooms:</h4>';
-				$dailyco_content .= '<div id="rooms" class="rooms"></div>';
-				$dailyco_content .= '</div>';
-			}
 		}
 	} else {
 		$dailyco_content  = '<div class="dailyco_notice">' . __( 'The video chat feature is not available unless ', 'daily_co' );
@@ -279,9 +272,28 @@ function dailyco_register_settings() {
 add_action( 'admin_init', 'dailyco_register_settings' );
 
 function dailyco_register_options_page() {
-	add_options_page( 'DailyCo Settings', 'DailyCo', 'manage_options', 'dailyco', 'dailyco_options_page' );
+	global $dailyco_settings_page;
+	$dailyco_settings_page = add_options_page( 'DailyCo Settings', 'DailyCo', 'manage_options', 'dailyco', 'dailyco_options_page' );
 }
 add_action( 'admin_menu', 'dailyco_register_options_page' );
+
+// Load Plugin JS for Admin
+function pw_load_scripts( $hook ) {
+	$localize = array(
+		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		'apikey'  => dailyco_crypt( get_option( 'dailyco_api_key' ), 'd' ),
+		'debug'   => debug_status(),
+	);
+
+	global $dailyco_settings_page;
+	if ( $hook !== $dailyco_settings_page ) {
+		return;
+	}
+	wp_enqueue_script( 'script-daily-co', plugins_url( 'assets/scripts.js', __FILE__ ), array( 'jquery' ), '1.0.0', true );
+	wp_enqueue_script( 'script-daily-co-source', 'https://unpkg.com/@daily-co/daily-js', array(), '1.0.0', true );
+	wp_localize_script( 'script-daily-co', 'daily_co_script', $localize );
+}
+add_action( 'admin_enqueue_scripts', 'pw_load_scripts' );
 
 // hook into the update function to encode our api key
 function dailyco_update_api_field( $new_value, $old_value ) {
@@ -376,6 +388,8 @@ function dailyco_options_page() {
 					</td>
 				</tr>
 			</table>
+			<h2 class="title"><?php esc_html_e( 'Existing Rooms', 'daily_co' ); ?></h2>
+			<div id="rooms" class="rooms">No Rooms</div>
 			<h2 class="title"><?php esc_html_e( 'Secrets for Encryption', 'daily_co' ); ?></h2>
 			<p class="description">These keys are used to encrypt the API key in the database. You are not able to change these, but you have the keys if you need them for any reason.</p>
 			<table class="form-table" role="presentation">
