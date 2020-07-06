@@ -133,7 +133,7 @@ function getRooms(roomStatus) {
 				let roomsJSON = JSON.parse(this.responseText);
 				for (let i = 0; i < roomsJSON.data.length; i++) {
 					let response = roomsJSON.data[i];
-					ourRooms = ourRooms + '<tr><td><a href=' + response.url + '>' + response.name + '</a></td><td>Room Expires On ' + convert_date(response.config.exp) + '</td><td><button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Now</button></td></tr>';
+					ourRooms = ourRooms + '<tr><td><a href=' + response.url + '>' + response.name + '</a></td><td>Room Expires On ' + convert_date(response.config.exp) + '</td><td><button class="delete" onclick="return deleteRoom(`' + response.name + '`)">Delete Now</button></td></tr>';
 				}
 
 				roomDiv.innerHTML = '<table role="presentation" class="wp-list-table widefat fixed striped">' + ourRooms + '</table>';
@@ -185,6 +185,12 @@ function convert_date(unixdate) {
 function deleteRoom(roomName) {
 	const data = null;
 
+	var confirmDelete = confirm("Are you sure you want to delete?");
+	console.log(confirmDelete);
+	if ( !confirmDelete ) {
+		return false;
+	}
+
 	const xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("readystatechange", function () {
@@ -198,4 +204,6 @@ function deleteRoom(roomName) {
 	xhr.setRequestHeader("authorization", connectionToken);
 
 	xhr.send(data);
+
+	return false;
 }
