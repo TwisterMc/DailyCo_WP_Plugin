@@ -133,10 +133,10 @@ function getRooms(roomStatus) {
 				let roomsJSON = JSON.parse(this.responseText);
 				for (let i = 0; i < roomsJSON.data.length; i++) {
 					let response = roomsJSON.data[i];
-					ourRooms = ourRooms + '<li><a href=' + response.url + '>' + response.name + '</a> <button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Room</button> EXP Date: ' + convert_date(response.config.exp) + '</li>';
+					ourRooms = ourRooms + '<tr><td><a href=' + response.url + '>' + response.name + '</a></td><td>Room Expires On ' + convert_date(response.config.exp) + '</td><td><button class="delete" onclick="deleteRoom(`' + response.name + '`)">Delete Now</button></td></tr>';
 				}
 
-				roomDiv.innerHTML = '<ul>' + ourRooms + '</ul>';
+				roomDiv.innerHTML = '<table role="presentation" class="wp-list-table widefat fixed striped">' + ourRooms + '</table>';
 
 				if (roomStatus === 'new') {
 					let text = document.getElementById('rooms');
@@ -156,7 +156,28 @@ function getRooms(roomStatus) {
 function convert_date(unixdate) {
 	let unix_timestamp = unixdate
 	let date = new Date(unix_timestamp * 1000);
-	return date;
+	let yyyy = date.getFullYear();
+	let mm = ('0' + (date.getMonth() + 1)).slice(-2);  // Months are zero based. Add leading 0.
+	let dd = ('0' + date.getDate()).slice(-2);       // Add leading 0.
+	let hh = date.getHours();
+	let h = hh;
+	let min = ('0' + date.getMinutes()).slice(-2);     // Add leading 0.
+	let ampm = 'AM';
+
+	if (hh > 12) {
+		h = hh - 12;
+		ampm = 'PM';
+	} else if (hh === 12) {
+		h = 12;
+		ampm = 'PM';
+	} else if (hh == 0) {
+		h = 12;
+	}
+
+	// ie: 07/07/2020 @ 2:07 PM
+	let time = mm + '/' + dd + '/' + yyyy + ' @ ' + h + ':' + min + ' ' + ampm;
+
+	return time;
 
 }
 
