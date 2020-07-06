@@ -85,6 +85,15 @@ function daily_co_scripts() {
 add_action( 'wp_enqueue_scripts', 'daily_co_scripts' );
 
 /**
+ * Add iFrame wrap to the footer.
+ * Doing this so we don't load an iFrame on every page unless we need it.
+ */
+function dailyco_add_iframe_wrapper() {
+	echo '<div id="dailyco_call_iframe_wrap"></div>';
+}
+add_action( 'wp_footer', 'dailyco_add_iframe_wrapper' );
+
+/**
  * Shortcode [dailyco]
  */
 function daily_co_shortcode_func() {

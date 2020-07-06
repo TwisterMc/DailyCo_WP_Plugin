@@ -2,7 +2,11 @@ const connectionToken = "Bearer " + daily_co_script.apikey;
 
 // Join a room
 function joinRoom(meetingID) {
-	const callFrame = window.DailyIframe.createFrame({
+	// add the placeholder iFrame
+	const iFrameHolder = document.getElementById("dailyco_call_iframe_wrap");
+	iFrameHolder.innerHTML = '<iframe class="dailyco_call_frame" id="dailyco_call_frame" title="daily.co call frame" allow="camera; microphone; autoplay; display-capture" style="position: fixed; top: 0px; left: 0px; width: 100%; height: 100%;"></iframe>';
+
+	const callFrame = window.DailyIframe.wrap(document.getElementById("dailyco_call_frame"),{
 		showLeaveButton: true,
 		iframeStyle: {
 			position: 'fixed',
@@ -14,9 +18,13 @@ function joinRoom(meetingID) {
 	});
 	callFrame.join({ url: meetingID });
 
+	// Add a class to ensure items don't show above the video.
+	document.body.classList.add('dailyco-active')
+
 	// Listen for when we leave the room so we can distroy the iFrame
 	callFrame.on('left-meeting', (evt) => {
 		callFrame.destroy();
+		document.body.classList.remove('dailyco-active')
 	})
 }
 
