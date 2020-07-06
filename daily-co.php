@@ -88,7 +88,11 @@ add_shortcode( 'dailyco', 'daily_co_shortcode_func' );
 function dailyco_render_markup() {
 	if ( ! is_admin() && is_user_logged_in() ) {
 		if ( ! get_option( 'dailyco_api_key' ) ) {
-			$dailyco_content = '<div class="dailyco_notice">' . __( 'There doesn\'t appear to be an API key in the settings.', 'daily_co' );
+			$settings_url     = site_url( '/wp-admin/options-general.php?page=dailyco' );
+			$dailyco_content  = '<div class="dailyco_notice">';
+			$dailyco_content .= __( 'There doesn\'t appear to be an API key in the settings. ', 'daily_co' );
+			$dailyco_content .= '<a href="' . $settings_url . '">' . __( 'Edit Settings.', 'daily_co' ) . '</a>';
+			$dailyco_content .= '</div>';
 		} else {
 			$dailyco_content  = '<div class="dailyco_wrapper">';
 			$dailyco_content .= '<h3 class="dailyco_header">' . get_option( 'dailyco_heading_text', 'Who would you like to meet with?' ) . '</h3>';
