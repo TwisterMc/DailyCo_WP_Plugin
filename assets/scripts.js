@@ -12,7 +12,12 @@ function joinRoom(meetingID) {
 			height: '100%'
 		}
 	});
-	callFrame.join({ url: meetingID })
+	callFrame.join({ url: meetingID });
+
+	// Listen for when we leave the room so we can distroy the iFrame
+	callFrame.on('left-meeting', (evt) => {
+		callFrame.destroy();
+	})
 }
 
 // Create a new room
